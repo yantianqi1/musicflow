@@ -19,5 +19,12 @@ LLM_API_KEY = os.getenv("LLM_API_KEY", "")
 LLM_MODEL = os.getenv("LLM_MODEL", "")
 LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "4096"))
 
+# Admin seed (首次启动时写入 DB 的初始管理员)
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@musicflow.com")
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
+# true=每次启动都把 ADMIN_EMAIL 用户的密码/用户名重置为 .env 值 (适合忘密码场景)
+ADMIN_RESET_ON_START = os.getenv("ADMIN_RESET_ON_START", "false").lower() in ("1", "true", "yes")
+
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(AGENT_UPLOAD_DIR, exist_ok=True)

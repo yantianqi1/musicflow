@@ -89,7 +89,8 @@ npm run dev
 |---|---|
 | `admin@musicflow.com` | `admin123` |
 
-> 首次启动时由 `main.py::seed_data()` 自动创建，并写入一份默认价格规则。
+> 首次启动时由 `main.py::seed_data()` 自动创建，并写入默认价格规则。
+> 改管理员账号密码：编辑 `.env` 里的 `ADMIN_EMAIL` / `ADMIN_USERNAME` / `ADMIN_PASSWORD`；若 DB 已存在，把 `ADMIN_RESET_ON_START=true`，重启一次再设回 `false`。
 
 ---
 

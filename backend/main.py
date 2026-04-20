@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 
-from backend.config import OUTPUT_DIR
+from backend.config import OUTPUT_DIR, ADMIN_EMAIL, ADMIN_USERNAME, ADMIN_PASSWORD, ADMIN_RESET_ON_START
 from backend.database import init_db, async_session, engine
 from backend.models import User, UserRole, PricingRule
 from backend.models.generation import derive_generation_title
@@ -40,18 +40,25 @@ DEFAULT_PRICING = [
 
 async def seed_data():
     async with async_session() as db:
-        # 初始管理员
-        result = await db.execute(select(User).where(User.email == "admin@musicflow.com"))
-        if not result.scalar_one_or_none():
-            admin_user = User(
-                email="admin@musicflow.com",
-                username="admin",
-                password_hash=hash_password("admin123"),
+        # 初始管理员 — 从 .env 读取
+        result = await db.execute(select(User).where(User.email == ADMIN_EMAIL))
+        existing_admin = result.scalar_one_or_none()
+        if existing_admin is None:
+            db.add(User(
+                email=ADMIN_EMAIL,
+                username=ADMIN_USERNAME,
+                password_hash=hash_password(ADMIN_PASSWORD),
                 role=UserRole.admin,
                 credits=999999,
                 is_active=True,
-            )
-            db.add(admin_user)
+            ))
+            logging.info("Seed: created admin user %s", ADMIN_EMAIL)
+        elif ADMIN_RESET_ON_START:
+            existing_admin.username = ADMIN_USERNAME
+            existing_admin.password_hash = hash_password(ADMIN_PASSWORD)
+            existing_admin.role = UserRole.admin
+            existing_admin.is_active = True
+            logging.info("Seed: ADMIN_RESET_ON_START=true, rotated credentials for %s", ADMIN_EMAIL)
 
         # 默认计费规则 — 按 (service_type, model) upsert，新增模型不用清库
         for stype, model, cost, unit, free_ok, desc in DEFAULT_PRICING:

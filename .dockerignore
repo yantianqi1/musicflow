@@ -1,0 +1,37 @@
+# 构建时无需进入容器的本地依赖
+frontend/node_modules
+frontend/dist
+frontend/dist-ssr
+
+# Python 缓存
+**/__pycache__
+**/*.pyc
+.venv
+venv
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# 运行时数据（通过 volume 挂载，不进镜像）
+data
+output
+*.db
+*.db-shm
+*.db-wal
+
+# 版本控制 / 编辑器
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+
+# 环境变量（容器用 env_file 注入）
+.env
+.env.local
+
+# 其他
+*.log
+logs
+README.md
+CLAUDE.md

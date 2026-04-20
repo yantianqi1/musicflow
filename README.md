@@ -108,7 +108,7 @@ docker compose ps
 docker compose logs -f backend
 ```
 
-- 前端访问：`http://<server-ip>:8080`（默认端口，可用 `FRONTEND_PORT` 改）
+- 前端访问：`http://<server-ip>:3444`（默认端口，可用 `FRONTEND_PORT` 改）
 - 后端不对外暴露，由前端容器 nginx 反代 `/api` 与 `/files`
 - 数据持久化：`./data`（SQLite）和 `./output`（音频文件）以 volume 方式挂载到宿主机
 

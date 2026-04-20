@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { API_BASE } from '../api/client'
 
 function normalizeTimelineItem(item) {
   if (item.type === 'message') {
@@ -37,7 +38,7 @@ function upsertMessage(messages, nextMessage) {
 }
 
 function toolCallPath(toolCallId, action) {
-  return `/api/agent/tool-calls/${encodeURIComponent(toolCallId)}/${action}`
+  return `/agent/tool-calls/${encodeURIComponent(toolCallId)}/${action}`
 }
 
 const useAgentStore = create((set, get) => ({
@@ -160,7 +161,7 @@ const useAgentStore = create((set, get) => ({
       error: null,
     }))
 
-    await get()._streamSSE('/api/agent/chat', {
+    await get()._streamSSE('/agent/chat', {
       session_id: currentSessionId,
       message,
       attachments: attachmentIds,
@@ -192,7 +193,7 @@ const useAgentStore = create((set, get) => ({
     const { currentSessionId } = get()
     if (!currentSessionId) return
     try {
-      const { data } = await api.post(toolCallPath(toolCallId, 'cancel').slice('/api'.length), {
+      const { data } = await api.post(toolCallPath(toolCallId, 'cancel'), {
         session_id: currentSessionId,
       })
       set((state) => ({
@@ -223,7 +224,7 @@ const useAgentStore = create((set, get) => ({
     let assistantMsgId = null
 
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`${API_BASE}/api${url}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

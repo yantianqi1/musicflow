@@ -29,6 +29,10 @@
 @layer base {
   * { box-sizing: border-box; }
 
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     font-family: 'Inter', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
     background: linear-gradient(135deg, #eef1f5 0%, #e2e6ec 100%);
@@ -36,11 +40,23 @@
     min-height: 100vh;
     line-height: 1.6;
     margin: 0;
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
   }
 
   #root {
     min-height: 100vh;
+  }
+
+  /* Mobile: deeper text color for better contrast on small screens, prevent iOS zoom on input focus */
+  @media (max-width: 1023px) {
+    body {
+      color: #1e293b;
+    }
+    input, textarea, select {
+      font-size: 16px !important;
+    }
   }
 }
 
@@ -600,4 +616,93 @@
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .animate-pulse-soft { animation: pulseSoft 2s infinite; }
   @keyframes pulseSoft { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+  /* Safe-area helpers for iOS notch / home indicator */
+  .safe-top    { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-x      { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+
+  /* Mobile scroll-chip row (horizontal snap list for tabs / quick-replies) */
+  .scroll-chip-row {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0.25rem 0.125rem;
+  }
+  .scroll-chip-row::-webkit-scrollbar { display: none; }
+  .scroll-chip-row > * { scroll-snap-align: start; flex-shrink: 0; }
+
+  /* Mobile slide-up sheet */
+  .mobile-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 50;
+    animation: sheetFadeIn 180ms ease;
+  }
+  .mobile-sheet-panel {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 51;
+    background: var(--color-surface);
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: sheetSlideUp 240ms cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  @keyframes sheetFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sheetSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+}
+
+/* ================= Mobile overrides (max-width: 1023px) ================= */
+@media (max-width: 1023px) {
+  .neu-card,
+  .neu-card-flat {
+    border-radius: 20px;
+  }
+  .neu-btn {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+  }
+  .neu-input,
+  .neu-select {
+    min-height: 46px;
+    font-size: 16px;
+  }
+  .neu-textarea {
+    font-size: 16px;
+    min-height: 120px;
+  }
+  .tag-btn {
+    min-height: 36px;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+  .neu-badge {
+    font-size: 0.8125rem;
+  }
+  /* Slightly stronger text contrast on mobile */
+  .text-text-light { color: #475569 !important; }
+  .text-text-muted { color: #64748b !important; }
+
+  /* Chat tweaks for mobile */
+  .chat-input-area {
+    padding: 0 0.75rem 0.75rem;
+  }
+  .chat-content-centered,
+  .chat-input-card {
+    max-width: 100%;
+  }
+  .chat-msg-row {
+    padding: 0.875rem 0;
+    gap: 0.625rem;
+  }
 }

@@ -64,25 +64,25 @@ export default function MusicCreate() {
 
   return (
     <div className="max-w-4xl mx-auto animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-        <Music size={24} strokeWidth={1.5} className="text-primary" /> 音乐创作
+      <h1 className="text-xl lg:text-2xl font-bold mb-5 lg:mb-6 flex items-center gap-2">
+        <Music size={22} strokeWidth={1.5} className="text-primary" /> 音乐创作
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         {/* Left: Lyrics */}
-        <div className="neu-card-flat p-5 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
+        <div className="neu-card-flat p-4 lg:p-5 flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-2">
             <h2 className="text-sm font-semibold">歌词</h2>
-            <button onClick={generateLyrics} disabled={lyricsLoading || !prompt} className="neu-btn text-xs gap-1">
+            <button onClick={generateLyrics} disabled={lyricsLoading || !prompt} className="neu-btn !text-xs !min-h-[36px] !py-2 !px-3 gap-1">
               <Wand2 size={14} /> {lyricsLoading ? 'AI 写词中...' : 'AI 写词'}
             </button>
           </div>
-          <div className="flex flex-wrap gap-1">
-            {TAGS.map((t) => <button key={t} onClick={() => insertTag(t)} className="tag-btn">{t}</button>)}
+          <div className="scroll-chip-row lg:flex lg:flex-wrap lg:gap-1 lg:overflow-visible">
+            {TAGS.map((t) => <button key={t} onClick={() => insertTag(t)} className="tag-btn whitespace-nowrap">{t}</button>)}
           </div>
           <textarea
             value={lyrics} onChange={(e) => setLyrics(e.target.value)}
-            className="neu-textarea flex-1" style={{ minHeight: '280px' }}
+            className="neu-textarea flex-1 min-h-[200px] lg:min-h-[280px]"
             placeholder="在此输入歌词，使用结构标签组织段落..."
             disabled={isInstrumental}
           />
@@ -90,7 +90,7 @@ export default function MusicCreate() {
 
         {/* Right: Config */}
         <div className="flex flex-col gap-4">
-          <div className="neu-card-flat p-5 flex flex-col gap-4">
+          <div className="neu-card-flat p-4 lg:p-5 flex flex-col gap-4">
             <ModelSelector models={MODELS} value={model} onChange={setModel} prices={PRICES} />
 
             <div>
@@ -102,7 +102,7 @@ export default function MusicCreate() {
               />
             </div>
 
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
+            <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
               <div className={`w-10 h-5 rounded-full relative transition-colors duration-200 ${isInstrumental ? 'bg-primary' : ''}`}
                 style={{ boxShadow: 'var(--shadow-neu-inset)' }}
                 onClick={() => setIsInstrumental(!isInstrumental)}>
@@ -114,7 +114,11 @@ export default function MusicCreate() {
 
           {error && <p className="text-xs text-danger text-center">{error}</p>}
 
-          <button onClick={generate} disabled={loading || (!prompt && !lyrics)} className="neu-btn neu-btn-primary py-3 w-full">
+          <button
+            onClick={generate}
+            disabled={loading || (!prompt && !lyrics)}
+            className="neu-btn neu-btn-primary !py-3.5 w-full !min-h-[52px] font-semibold sticky bottom-[calc(80px+env(safe-area-inset-bottom))] lg:static lg:py-3"
+          >
             {loading ? '生成中...' : `生成音乐 (${PRICES[model]} 积分)`}
           </button>
 

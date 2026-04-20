@@ -53,21 +53,26 @@ export default function SpeechSynth() {
 
   return (
     <div className="max-w-4xl mx-auto animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-        <Mic size={24} strokeWidth={1.5} className="text-primary" /> 语音合成
+      <h1 className="text-xl lg:text-2xl font-bold mb-5 lg:mb-6 flex items-center gap-2">
+        <Mic size={22} strokeWidth={1.5} className="text-primary" /> 语音合成
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
         {/* Text input */}
-        <div className="lg:col-span-2 neu-card-flat p-5 flex flex-col gap-4">
+        <div className="lg:col-span-2 neu-card-flat p-4 lg:p-5 flex flex-col gap-3 lg:gap-4">
           <label className="text-xs font-medium text-text-light">输入文本</label>
-          <textarea value={text} onChange={(e) => setText(e.target.value)} className="neu-textarea flex-1" style={{ minHeight: '300px' }} placeholder="输入需要合成语音的文本..." />
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="neu-textarea flex-1 min-h-[200px] lg:min-h-[300px]"
+            placeholder="输入需要合成语音的文本..."
+          />
           <p className="text-xs text-text-muted text-right">{text.length} / 10000 字符</p>
         </div>
 
         {/* Settings */}
         <div className="flex flex-col gap-4">
-          <div className="neu-card-flat p-5 flex flex-col gap-4">
+          <div className="neu-card-flat p-4 lg:p-5 flex flex-col gap-4">
             <ModelSelector models={MODELS} value={model} onChange={setModel} prices={Object.fromEntries(Object.entries(RATE_PER_10K).map(([k,v]) => [k, `${v}/万字`]))} />
 
             <div>
@@ -92,9 +97,13 @@ export default function SpeechSynth() {
 
             <div>
               <label className="text-xs font-medium text-text-light mb-1.5 block">情绪</label>
-              <div className="flex flex-wrap gap-1">
+              <div className="scroll-chip-row lg:flex lg:flex-wrap lg:gap-1 lg:overflow-visible">
                 {EMOTIONS.map((e) => (
-                  <button key={e} onClick={() => setEmotion(e)} className={`tag-btn ${emotion === e ? 'shadow-neu-inset text-primary font-semibold' : ''}`}>
+                  <button
+                    key={e}
+                    onClick={() => setEmotion(e)}
+                    className={`tag-btn whitespace-nowrap ${emotion === e ? 'shadow-neu-inset text-primary font-semibold' : ''}`}
+                  >
                     {EMOTION_LABELS[e]}
                   </button>
                 ))}
@@ -104,7 +113,11 @@ export default function SpeechSynth() {
 
           {error && <p className="text-xs text-danger text-center">{error}</p>}
 
-          <button onClick={generate} disabled={loading || !text} className="neu-btn neu-btn-primary py-3 w-full">
+          <button
+            onClick={generate}
+            disabled={loading || !text}
+            className="neu-btn neu-btn-primary !py-3.5 w-full !min-h-[52px] font-semibold sticky bottom-[calc(80px+env(safe-area-inset-bottom))] lg:static lg:py-3"
+          >
             {loading ? '合成中...' : `合成语音 (${text.length > 0 ? estimatedCost : 0} 积分)`}
           </button>
 

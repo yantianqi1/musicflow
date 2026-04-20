@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom'
-import { Users, BarChart3, Settings, Shield } from 'lucide-react'
+import { Users, BarChart3, Settings, Shield, Info } from 'lucide-react'
 import api from '../../api/client'
 
 function UserManage() {
@@ -36,23 +36,23 @@ function UserManage() {
       <div className="flex flex-col gap-2">
         {users.map((u) => (
           <div key={u.id} className="neu-card-flat p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">{u.username} <span className="text-xs text-text-muted">({u.email})</span></p>
-                <p className="text-xs text-text-muted">角色: {u.role} | 积分: {u.credits} | {u.is_active ? '活跃' : '已禁用'}</p>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium truncate">{u.username} <span className="text-xs text-text-muted">({u.email})</span></p>
+                <p className="text-xs text-text-muted mt-0.5">角色: {u.role} · 积分: {u.credits} · {u.is_active ? '活跃' : '已禁用'}</p>
               </div>
-              <div className="flex gap-2">
-                <button onClick={() => setAdjustId(adjustId === u.id ? null : u.id)} className="neu-btn text-xs">调整积分</button>
-                <button onClick={() => toggleStatus(u.id, u.is_active)} className={`neu-btn text-xs ${u.is_active ? 'neu-btn-danger' : 'neu-btn-primary'}`}>
+              <div className="flex gap-2 flex-shrink-0">
+                <button onClick={() => setAdjustId(adjustId === u.id ? null : u.id)} className="neu-btn !text-xs !min-h-[40px] !py-2 !px-3 flex-1 lg:flex-none">调整积分</button>
+                <button onClick={() => toggleStatus(u.id, u.is_active)} className={`neu-btn !text-xs !min-h-[40px] !py-2 !px-3 flex-1 lg:flex-none ${u.is_active ? 'neu-btn-danger' : 'neu-btn-primary'}`}>
                   {u.is_active ? '禁用' : '启用'}
                 </button>
               </div>
             </div>
             {adjustId === u.id && (
-              <div className="flex gap-2 mt-3 animate-fade-in">
-                <input type="number" value={adjustAmount} onChange={(e) => setAdjustAmount(e.target.value)} className="neu-input w-32" placeholder="积分数" />
-                <input value={adjustDesc} onChange={(e) => setAdjustDesc(e.target.value)} className="neu-input flex-1" placeholder="备注" />
-                <button onClick={() => adjust(u.id)} className="neu-btn neu-btn-primary text-xs">确认</button>
+              <div className="flex flex-col lg:flex-row gap-2 mt-3 animate-fade-in">
+                <input type="number" value={adjustAmount} onChange={(e) => setAdjustAmount(e.target.value)} className="neu-input lg:w-32" placeholder="积分数" />
+                <input value={adjustDesc} onChange={(e) => setAdjustDesc(e.target.value)} className="neu-input lg:flex-1" placeholder="备注" />
+                <button onClick={() => adjust(u.id)} className="neu-btn neu-btn-primary !text-xs">确认</button>
               </div>
             )}
           </div>
@@ -61,7 +61,7 @@ function UserManage() {
       {total > 20 && (
         <div className="flex justify-center gap-2 mt-4">
           <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="neu-btn text-xs">上一页</button>
-          <span className="text-sm text-text-muted">{page}</span>
+          <span className="text-sm text-text-muted flex items-center">{page}</span>
           <button onClick={() => setPage((p) => p + 1)} disabled={page * 20 >= total} className="neu-btn text-xs">下一页</button>
         </div>
       )}
@@ -172,24 +172,45 @@ const tabs = [
 export default function AdminLayout() {
   return (
     <div className="max-w-4xl mx-auto animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-        <Shield size={24} strokeWidth={1.5} className="text-primary" /> 管理后台
+      <h1 className="text-xl lg:text-2xl font-bold mb-4 lg:mb-6 flex items-center gap-2">
+        <Shield size={22} strokeWidth={1.5} className="text-primary" /> 管理后台
       </h1>
 
-      <div className="flex gap-2 mb-6">
+      {/* Mobile notice — admin area works best on desktop */}
+      <div
+        className="lg:hidden mb-4 p-3 rounded-[14px] flex items-start gap-2.5 text-xs"
+        style={{
+          background: 'rgba(99, 102, 241, 0.08)',
+          border: '1px solid rgba(99, 102, 241, 0.2)',
+          color: 'var(--color-primary)',
+        }}
+      >
+        <Info size={14} className="flex-shrink-0 mt-0.5" />
+        <span>管理后台建议在桌面端使用以获得完整体验。部分表格在手机端可横向滚动查看。</span>
+      </div>
+
+      <div className="scroll-chip-row mb-5 lg:flex lg:gap-2 lg:mb-6 lg:overflow-visible">
         {tabs.map(({ path, icon: Icon, label }) => (
-          <NavLink key={path} to={`/admin/${path}`} end
-            className={({ isActive }) => `neu-btn gap-1.5 ${isActive ? 'shadow-neu-inset text-primary' : ''}`}>
+          <NavLink
+            key={path}
+            to={`/admin/${path}`}
+            end
+            className={({ isActive }) =>
+              `neu-btn gap-1.5 whitespace-nowrap ${isActive ? 'shadow-neu-inset text-primary font-semibold' : ''}`
+            }
+          >
             <Icon size={16} /> {label}
           </NavLink>
         ))}
       </div>
 
-      <Routes>
-        <Route index element={<UserManage />} />
-        <Route path="stats" element={<Stats />} />
-        <Route path="pricing" element={<PricingConfig />} />
-      </Routes>
+      <div className="overflow-x-auto">
+        <Routes>
+          <Route index element={<UserManage />} />
+          <Route path="stats" element={<Stats />} />
+          <Route path="pricing" element={<PricingConfig />} />
+        </Routes>
+      </div>
     </div>
   )
 }

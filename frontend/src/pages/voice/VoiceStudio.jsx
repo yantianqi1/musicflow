@@ -16,13 +16,17 @@ export default function VoiceStudio() {
 
   return (
     <div className="max-w-3xl mx-auto animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-        <Sparkles size={24} strokeWidth={1.5} className="text-primary" /> 声音工作室
+      <h1 className="text-xl lg:text-2xl font-bold mb-5 lg:mb-6 flex items-center gap-2">
+        <Sparkles size={22} strokeWidth={1.5} className="text-primary" /> 声音工作室
       </h1>
 
-      <div className="flex gap-2 mb-6">
+      <div className="scroll-chip-row mb-5 lg:flex lg:gap-2 lg:mb-6 lg:overflow-visible">
         {TABS.map(({ id, icon: Icon, label }) => (
-          <button key={id} onClick={() => setTab(id)} className={`neu-btn gap-1.5 ${tab === id ? 'shadow-neu-inset text-primary' : ''}`}>
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`neu-btn gap-1.5 whitespace-nowrap ${tab === id ? 'shadow-neu-inset text-primary font-semibold' : ''}`}
+          >
             <Icon size={16} /> {label}
           </button>
         ))}
@@ -63,7 +67,7 @@ function CloneTab() {
   }
 
   return (
-    <div className="neu-card-flat p-6 flex flex-col gap-4">
+    <div className="neu-card-flat p-4 lg:p-6 flex flex-col gap-4">
       <div>
         <label className="text-xs font-medium text-text-light mb-1.5 block">上传待克隆音频（10秒-5分钟）</label>
         <input type="file" accept=".mp3,.m4a,.wav" onChange={(e) => setFile(e.target.files?.[0] || null)} className="neu-input text-sm" />
@@ -77,7 +81,11 @@ function CloneTab() {
         <textarea value={text} onChange={(e) => setText(e.target.value)} className="neu-textarea" />
       </div>
       {error && <p className="text-xs text-danger">{error}</p>}
-      <button onClick={handleClone} disabled={loading || !file || !voiceId} className="neu-btn neu-btn-primary py-3">
+      <button
+        onClick={handleClone}
+        disabled={loading || !file || !voiceId}
+        className="neu-btn neu-btn-primary !py-3.5 !min-h-[52px] font-semibold"
+      >
         {loading ? '克隆中...' : '开始克隆 (1386 积分 / 13.86元)'}
       </button>
       {loading && <LoadingState text="正在克隆声音..." />}
@@ -106,7 +114,7 @@ function DesignTab() {
   }
 
   return (
-    <div className="neu-card-flat p-6 flex flex-col gap-4">
+    <div className="neu-card-flat p-4 lg:p-6 flex flex-col gap-4">
       <div>
         <label className="text-xs font-medium text-text-light mb-1.5 block">音色描述</label>
         <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} className="neu-textarea"
@@ -118,7 +126,11 @@ function DesignTab() {
           placeholder="输入用于试听的文本" />
       </div>
       {error && <p className="text-xs text-danger">{error}</p>}
-      <button onClick={handleDesign} disabled={loading || !prompt || !previewText} className="neu-btn neu-btn-primary py-3">
+      <button
+        onClick={handleDesign}
+        disabled={loading || !prompt || !previewText}
+        className="neu-btn neu-btn-primary !py-3.5 !min-h-[52px] font-semibold"
+      >
         {loading ? '设计中...' : '生成音色 (1386 积分 / 13.86元)'}
       </button>
       {loading && <LoadingState text="正在设计音色..." />}
@@ -145,20 +157,24 @@ function ManageTab() {
   }
 
   return (
-    <div className="neu-card-flat p-6 flex flex-col gap-4">
+    <div className="neu-card-flat p-4 lg:p-6 flex flex-col gap-4">
       <button onClick={fetchVoices} className="neu-btn" disabled={loading}>
         {loading ? '加载中...' : '加载音色列表'}
       </button>
       {voices.length > 0 && (
         <div className="flex flex-col gap-2 max-h-96 overflow-auto">
           {voices.map((v) => (
-            <div key={v.voice_id} className="flex items-center justify-between p-3 rounded-[12px]" style={{ boxShadow: 'var(--shadow-neu-sm)' }}>
-              <div>
-                <p className="text-sm font-medium">{v.voice_name || v.voice_id}</p>
-                <p className="text-xs text-text-muted">{v.voice_type} {v.description ? `- ${v.description}` : ''}</p>
+            <div key={v.voice_id} className="flex items-center justify-between gap-2 p-3 rounded-[12px]" style={{ boxShadow: 'var(--shadow-neu-sm)' }}>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium truncate">{v.voice_name || v.voice_id}</p>
+                <p className="text-xs text-text-muted truncate">{v.voice_type} {v.description ? `- ${v.description}` : ''}</p>
               </div>
               {v.voice_type !== 'system' && (
-                <button onClick={() => deleteVoice(v.voice_id)} className="neu-btn neu-btn-danger p-2 text-xs">
+                <button
+                  onClick={() => deleteVoice(v.voice_id)}
+                  className="neu-btn neu-btn-danger !w-10 !h-10 !p-0 !min-h-[40px] justify-center flex-shrink-0"
+                  aria-label="删除音色"
+                >
                   <Trash2 size={14} />
                 </button>
               )}

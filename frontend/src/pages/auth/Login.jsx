@@ -26,9 +26,9 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="neu-card p-8 w-full max-w-md animate-fade-in">
-        <div className="text-center mb-8">
+    <div className="min-h-screen flex items-center justify-center p-4 safe-top safe-bottom">
+      <div className="neu-card p-6 lg:p-8 w-full max-w-md animate-fade-in">
+        <div className="text-center mb-6 lg:mb-8">
           <div className="inline-flex p-4 rounded-full shadow-neu mb-4">
             <Music size={32} className="text-primary" strokeWidth={1.5} />
           </div>
@@ -40,32 +40,47 @@ export default function Login() {
           <div>
             <label className="text-xs font-medium text-text-light mb-1.5 block">邮箱</label>
             <div className="relative">
-              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
               <input
-                type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                className="neu-input pl-10" placeholder="your@email.com" required
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="neu-input !pl-10"
+                placeholder="your@email.com"
+                required
+                autoComplete="email"
+                inputMode="email"
               />
             </div>
           </div>
           <div>
             <label className="text-xs font-medium text-text-light mb-1.5 block">密码</label>
             <div className="relative">
-              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
               <input
-                type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                className="neu-input pl-10" placeholder="输入密码" required
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="neu-input !pl-10"
+                placeholder="输入密码"
+                required
+                autoComplete="current-password"
               />
             </div>
           </div>
 
           {error && <p className="text-xs text-danger text-center">{error}</p>}
 
-          <button type="submit" disabled={loading} className="neu-btn neu-btn-primary py-3 mt-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="neu-btn neu-btn-primary !py-3.5 !min-h-[52px] mt-2 font-semibold"
+          >
             {loading ? '登录中...' : '登录'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-text-muted mt-6">
+        <p className="text-center text-sm text-text-muted mt-5 lg:mt-6">
           还没有账号？ <Link to="/register" className="text-primary font-medium">立即注册</Link>
         </p>
       </div>

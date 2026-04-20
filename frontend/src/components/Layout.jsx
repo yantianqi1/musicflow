@@ -3,6 +3,9 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { Music, Mic, AudioWaveform, Sparkles, Zap, Coins, LayoutDashboard, Shield, LogOut, Gift, FolderOpen, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import useAuthStore from '../store/authStore'
 import GlobalPlayer from './GlobalPlayer'
+import MobileHeader from './mobile/MobileHeader'
+import BottomTabBar from './mobile/BottomTabBar'
+import MoreSheet from './mobile/MoreSheet'
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: '工作台' },
@@ -28,6 +31,7 @@ export default function Layout() {
     if (typeof window === 'undefined') return false
     return window.localStorage.getItem(COLLAPSE_STORAGE_KEY) === '1'
   })
+  const [moreOpen, setMoreOpen] = useState(false)
 
   useEffect(() => {
     window.localStorage.setItem(COLLAPSE_STORAGE_KEY, collapsed ? '1' : '0')
@@ -56,9 +60,9 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
+      {/* Desktop Sidebar */}
       <aside
-        className={`${collapsed ? 'w-16 p-2' : 'w-64 p-4'} flex flex-col gap-2 bg-surface shadow-neu sticky top-0 h-screen transition-all duration-200`}
+        className={`${collapsed ? 'w-16 p-2' : 'w-64 p-4'} hidden lg:flex flex-col gap-2 bg-surface shadow-neu sticky top-0 h-screen transition-all duration-200`}
         style={{ borderRadius: '0 24px 24px 0' }}
       >
         {/* Brand + collapse toggle */}
@@ -221,10 +225,22 @@ export default function Layout() {
         )}
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 p-6 overflow-auto pb-24">
-        <Outlet />
-      </main>
+      {/* Main content area — flex column on mobile to allow header/footer stacking */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile top header */}
+        <MobileHeader onOpenMore={() => setMoreOpen(true)} />
+
+        {/* Main */}
+        <main className="flex-1 overflow-auto px-4 pt-4 pb-[calc(80px+env(safe-area-inset-bottom))] lg:p-6 lg:pb-24">
+          <Outlet />
+        </main>
+      </div>
+
+      {/* Mobile bottom tab bar */}
+      <BottomTabBar onOpenMore={() => setMoreOpen(true)} />
+
+      {/* Mobile "more" bottom sheet */}
+      <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
 
       {/* Global audio player */}
       <GlobalPlayer />

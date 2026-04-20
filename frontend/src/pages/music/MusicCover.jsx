@@ -35,11 +35,11 @@ export default function MusicCover() {
 
   return (
     <div className="max-w-3xl mx-auto animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-        <AudioWaveform size={24} strokeWidth={1.5} className="text-primary" /> 翻唱
+      <h1 className="text-xl lg:text-2xl font-bold mb-5 lg:mb-6 flex items-center gap-2">
+        <AudioWaveform size={22} strokeWidth={1.5} className="text-primary" /> 翻唱
       </h1>
 
-      <div className="neu-card-flat p-6 flex flex-col gap-5">
+      <div className="neu-card-flat p-4 lg:p-6 flex flex-col gap-4 lg:gap-5">
         <ModelSelector models={MODELS} value={model} onChange={setModel} prices={PRICES} />
 
         <div>
@@ -59,7 +59,11 @@ export default function MusicCover() {
 
         {error && <p className="text-xs text-danger text-center">{error}</p>}
 
-        <button onClick={generate} disabled={loading || !prompt || !audioUrl} className="neu-btn neu-btn-primary py-3">
+        <button
+          onClick={generate}
+          disabled={loading || !prompt || !audioUrl}
+          className="neu-btn neu-btn-primary !py-3.5 !min-h-[52px] font-semibold"
+        >
           {loading ? '生成中...' : `生成翻唱 (${PRICES[model]} 积分)`}
         </button>
 

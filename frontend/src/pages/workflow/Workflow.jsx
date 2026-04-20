@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Zap, Music, BookOpen } from 'lucide-react'
+import { Zap, Music } from 'lucide-react'
 import api from '../../api/client'
 import useAuthStore from '../../store/authStore'
 import AudioPlayer from '../../components/AudioPlayer'
@@ -33,12 +33,12 @@ export default function Workflow() {
 
   return (
     <div className="max-w-3xl mx-auto animate-fade-in">
-      <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-        <Zap size={24} strokeWidth={1.5} className="text-primary" /> 一键工作流
+      <h1 className="text-xl lg:text-2xl font-bold mb-5 lg:mb-6 flex items-center gap-2">
+        <Zap size={22} strokeWidth={1.5} className="text-primary" /> 一键工作流
       </h1>
 
-      {/* Progress */}
-      <div className="flex items-center gap-2 mb-6">
+      {/* Progress — horizontal on desktop, compact stepper on mobile */}
+      <div className="hidden lg:flex items-center gap-2 mb-6">
         {steps.map((s, i) => (
           <div key={i} className="flex items-center gap-2 flex-1">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200 ${
@@ -52,7 +52,20 @@ export default function Workflow() {
         ))}
       </div>
 
-      <div className="neu-card-flat p-6 flex flex-col gap-5">
+      <div className="lg:hidden flex items-center justify-between gap-1 mb-5 px-1">
+        {steps.map((s, i) => (
+          <div key={i} className="flex flex-col items-center gap-1 flex-1">
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all duration-200 ${
+              i <= step
+                ? 'bg-gradient-to-br from-primary to-accent text-white'
+                : 'shadow-neu-sm text-text-muted'
+            }`}>{i + 1}</div>
+            <span className={`text-[10.5px] text-center ${i <= step ? 'text-primary font-medium' : 'text-text-muted'}`}>{s}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="neu-card-flat p-4 lg:p-6 flex flex-col gap-4 lg:gap-5">
         <div className="flex items-center gap-2 text-sm font-medium text-text">
           <Music size={18} /> 灵感到歌曲
         </div>
@@ -70,7 +83,11 @@ export default function Workflow() {
 
         {error && <p className="text-xs text-danger">{error}</p>}
 
-        <button onClick={run} disabled={loading || !theme} className="neu-btn neu-btn-primary py-3">
+        <button
+          onClick={run}
+          disabled={loading || !theme}
+          className="neu-btn neu-btn-primary !py-3.5 !min-h-[52px] font-semibold"
+        >
           {loading ? '执行中...' : '一键生成歌曲 (147 积分起 / 约1.47元)'}
         </button>
 

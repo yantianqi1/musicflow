@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
-import { Bot, Plus, Send, Trash2, Coins, ChevronDown, Loader2, AlertCircle, Check, Music, Mic, Sparkles, AudioWaveform, MessageSquare, Wrench, ThumbsUp, PenLine, RefreshCw, PenTool, Volume2, BookOpen, Users, Fingerprint, Wand2, List, Calculator, Search, Paperclip, X, FileText, Image, Copy, ChevronUp, Bookmark } from 'lucide-react'
+import { Bot, Plus, Send, Trash2, Coins, ChevronDown, Loader2, AlertCircle, Check, Music, Mic, Sparkles, AudioWaveform, MessageSquare, Wrench, ThumbsUp, PenLine, RefreshCw, PenTool, Volume2, BookOpen, Users, Fingerprint, Wand2, List, Calculator, Search, Paperclip, X, FileText, Image, Copy, ChevronUp, Bookmark, Menu } from 'lucide-react'
 import api from '../../api/client'
 import useAgentStore from '../../store/agentStore'
 import useAuthStore from '../../store/authStore'
@@ -96,10 +96,13 @@ export default function AgentWorkspace() {
   const { user, updateCredits } = useAuthStore()
   const [input, setInput] = useState('')
   const [attachedFiles, setAttachedFiles] = useState([])
+  const [sessionSheetOpen, setSessionSheetOpen] = useState(false)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const fileInputRef = useRef(null)
   const groups = useMemo(() => groupMessages(messages), [messages])
+
+  const currentSession = sessions.find((s) => s.id === currentSessionId)
 
   useLayoutEffect(() => {
     resizeChatInput(inputRef.current)
@@ -175,9 +178,38 @@ export default function AgentWorkspace() {
   )
 
   return (
-    <div className="flex h-[calc(100vh-3rem)] animate-fade-in -m-6">
-      {/* Session sidebar */}
-      <aside className="w-60 flex-shrink-0 flex flex-col border-r border-[rgba(0,0,0,0.06)]" style={{ background: 'var(--color-surface-light)' }}>
+    <div className="flex flex-col lg:flex-row animate-fade-in -mx-4 -mt-4 lg:-m-6 h-[calc(100dvh-136px-env(safe-area-inset-top)-env(safe-area-inset-bottom))] lg:h-[calc(100vh-3rem)]">
+      {/* Mobile top bar: hamburger + session title + new-chat */}
+      <div
+        className="lg:hidden flex items-center justify-between gap-2 px-3 h-12 border-b border-black/5 flex-shrink-0"
+        style={{ background: '#fff' }}
+      >
+        <button
+          onClick={() => setSessionSheetOpen(true)}
+          className="w-10 h-10 rounded-xl flex items-center justify-center"
+          style={{ color: 'var(--color-text-light)' }}
+          aria-label="会话列表"
+        >
+          <Menu size={18} />
+        </button>
+        <div
+          className="text-[13px] font-semibold truncate text-center flex-1 min-w-0"
+          style={{ color: '#1e293b' }}
+        >
+          {currentSession?.title || 'Lyra · AI 音乐创作'}
+        </div>
+        <button
+          onClick={() => createSession(api)}
+          className="w-10 h-10 rounded-xl flex items-center justify-center"
+          style={{ color: 'var(--color-primary)' }}
+          aria-label="新对话"
+        >
+          <Plus size={18} />
+        </button>
+      </div>
+
+      {/* Desktop session sidebar */}
+      <aside className="hidden lg:flex w-60 flex-shrink-0 flex-col border-r border-[rgba(0,0,0,0.06)]" style={{ background: 'var(--color-surface-light)' }}>
         <div className="p-3">
           <button onClick={() => createSession(api)} className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border border-[rgba(0,0,0,0.08)] bg-white hover:bg-[var(--color-surface)] text-sm font-medium text-text transition-all duration-150 hover:shadow-sm">
             <Plus size={16} /> 新对话
@@ -207,8 +239,57 @@ export default function AgentWorkspace() {
         </div>
       </aside>
 
+      {/* Mobile session bottom sheet */}
+      {sessionSheetOpen && (
+        <div className="lg:hidden" role="dialog" aria-modal="true">
+          <div className="mobile-sheet-backdrop" onClick={() => setSessionSheetOpen(false)} />
+          <div className="mobile-sheet-panel" style={{ maxHeight: '75vh' }}>
+            <div className="flex justify-center pt-2.5 pb-1">
+              <div className="w-10 h-1 rounded-full bg-[rgba(0,0,0,0.15)]" />
+            </div>
+            <div className="flex items-center justify-between px-5 pt-2 pb-3">
+              <h3 className="text-base font-semibold" style={{ color: '#1e293b' }}>会话</h3>
+              <button
+                onClick={() => { createSession(api); setSessionSheetOpen(false) }}
+                className="neu-btn !text-xs !min-h-[36px] !py-2 !px-3 gap-1"
+              >
+                <Plus size={14} /> 新对话
+              </button>
+            </div>
+            <div className="h-px mx-5 bg-[rgba(0,0,0,0.06)]" />
+            <div className="px-3 py-3 space-y-1.5 overflow-y-auto" style={{ maxHeight: 'calc(75vh - 120px)' }}>
+              {sessions.length === 0 && (
+                <p className="text-sm text-text-muted text-center py-6">还没有对话</p>
+              )}
+              {sessions.map((s) => (
+                <div
+                  key={s.id}
+                  onClick={() => { selectSession(api, s.id); setSessionSheetOpen(false) }}
+                  className={`flex items-center gap-2.5 p-3 rounded-[14px] cursor-pointer transition-all ${
+                    currentSessionId === s.id
+                      ? 'shadow-neu-inset text-primary font-semibold'
+                      : 'shadow-neu-sm active:shadow-neu-inset'
+                  }`}
+                  style={{ background: 'var(--color-surface)', minHeight: '52px' }}
+                >
+                  <MessageSquare size={16} className="flex-shrink-0 opacity-60" />
+                  <span className="flex-1 truncate text-sm">{s.title || '新对话'}</span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteSession(api, s.id) }}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-danger"
+                    aria-label="删除会话"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main chat area */}
-      <div className="flex-1 flex flex-col" style={{ background: '#fff' }}>
+      <div className="flex-1 flex flex-col min-h-0" style={{ background: '#fff' }}>
         <div className="flex-1 overflow-y-auto px-4 pt-4 pb-3">
           <div className="chat-content-centered">
           {messages.length === 0 && !streaming && (
@@ -575,21 +656,21 @@ function WelcomeScreen({ onSuggestion }) {
   ]
 
   return (
-    <div className="flex flex-col items-center justify-center h-full animate-fade-in">
-      <div className="inline-flex p-3.5 rounded-2xl mb-5" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))' }}>
-        <Sparkles size={28} className="text-white" strokeWidth={2} />
+    <div className="flex flex-col items-center justify-center h-full animate-fade-in px-2">
+      <div className="inline-flex p-3 lg:p-3.5 rounded-2xl mb-4 lg:mb-5" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))' }}>
+        <Sparkles size={26} className="text-white" strokeWidth={2} />
       </div>
-      <h2 className="text-2xl font-bold text-text mb-1.5">嗨，我是 Lyra</h2>
-      <p className="text-sm text-text-muted mb-10">你的 AI 音乐创作伙伴 · 用自然语言描述你的需求</p>
-      <div className="grid grid-cols-2 gap-3 max-w-lg w-full">
+      <h2 className="text-xl lg:text-2xl font-bold text-text mb-1.5 text-center">嗨，我是 Lyra</h2>
+      <p className="text-xs lg:text-sm text-text-muted mb-6 lg:mb-10 text-center px-3">你的 AI 音乐创作伙伴 · 用自然语言描述你的需求</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 lg:gap-3 max-w-lg w-full">
         {suggestions.map(({ icon: Icon, text, sub }) => (
           <button
             key={text}
             onClick={() => onSuggestion(text)}
-            className="group/card flex flex-col items-start gap-2 p-4 rounded-2xl border border-[rgba(0,0,0,0.06)] bg-white hover:border-[var(--color-primary)] hover:shadow-md transition-all duration-200 text-left"
+            className="group/card flex items-start gap-3 sm:flex-col sm:items-start sm:gap-2 p-3.5 sm:p-4 rounded-2xl border border-[rgba(0,0,0,0.06)] bg-white hover:border-[var(--color-primary)] active:border-[var(--color-primary)] hover:shadow-md transition-all duration-200 text-left min-h-[64px]"
           >
-            <Icon size={18} className="text-text-muted group-hover/card:text-primary transition-colors" />
-            <div>
+            <Icon size={18} className="text-text-muted group-hover/card:text-primary transition-colors flex-shrink-0 mt-0.5 sm:mt-0" />
+            <div className="min-w-0 flex-1">
               <p className="text-sm text-text leading-snug">{text}</p>
               <p className="text-xs text-text-muted mt-0.5">{sub}</p>
             </div>

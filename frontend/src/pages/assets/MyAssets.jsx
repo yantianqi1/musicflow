@@ -231,14 +231,24 @@ function Pagination({ page, total, pageSize, onChange }) {
 
   return (
     <div className="flex items-center justify-center gap-3 mt-6">
-      <button onClick={() => onChange(page - 1)} disabled={page <= 1} className="neu-btn p-2">
-        <ChevronLeft size={16} />
+      <button
+        onClick={() => onChange(page - 1)}
+        disabled={page <= 1}
+        className="neu-btn w-11 h-11 p-0 justify-center"
+        aria-label="上一页"
+      >
+        <ChevronLeft size={18} />
       </button>
-      <span className="text-sm text-text-muted">
+      <span className="text-sm text-text-muted min-w-[60px] text-center">
         {page} / {totalPages}
       </span>
-      <button onClick={() => onChange(page + 1)} disabled={page >= totalPages} className="neu-btn p-2">
-        <ChevronRight size={16} />
+      <button
+        onClick={() => onChange(page + 1)}
+        disabled={page >= totalPages}
+        className="neu-btn w-11 h-11 p-0 justify-center"
+        aria-label="下一页"
+      >
+        <ChevronRight size={18} />
       </button>
     </div>
   )
@@ -293,12 +303,12 @@ export default function MyAssets() {
   return (
     <div className="max-w-5xl mx-auto animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-text flex items-center gap-2">
-          <FolderOpen size={24} strokeWidth={1.5} className="text-primary" /> 我的作品
+      <div className="flex items-start justify-between gap-3 mb-5 lg:mb-6 flex-wrap">
+        <h1 className="text-xl lg:text-2xl font-bold text-text flex items-center gap-2">
+          <FolderOpen size={22} strokeWidth={1.5} className="text-primary" /> 我的作品
         </h1>
         {stats && (
-          <div className="flex gap-3">
+          <div className="flex gap-2 flex-wrap">
             <span className="neu-badge">
               共 {stats.total_generations} 件作品
             </span>
@@ -309,13 +319,13 @@ export default function MyAssets() {
         )}
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6 flex-wrap">
+      {/* Tabs — horizontal scroll on mobile */}
+      <div className="scroll-chip-row mb-5 lg:flex lg:gap-2 lg:mb-6 lg:flex-wrap lg:overflow-visible">
         {TABS.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setTab(key)}
-            className={`neu-btn gap-1.5 text-sm ${tab === key ? 'shadow-neu-inset text-primary font-semibold' : ''}`}
+            className={`neu-btn gap-1.5 text-sm whitespace-nowrap ${tab === key ? 'shadow-neu-inset text-primary font-semibold' : ''}`}
           >
             <Icon size={16} strokeWidth={1.5} />
             {label}

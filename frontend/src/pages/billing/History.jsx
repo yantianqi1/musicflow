@@ -19,22 +19,22 @@ export default function History() {
 
   return (
     <div className="max-w-3xl mx-auto animate-fade-in">
-      <div className="flex items-center gap-3 mb-6">
-        <Link to="/billing" className="neu-btn p-2"><ArrowLeft size={18} /></Link>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <Clock size={24} strokeWidth={1.5} className="text-primary" /> 消费记录
+      <div className="flex items-center gap-3 mb-5 lg:mb-6">
+        <Link to="/billing" className="neu-btn !w-11 !h-11 !p-0 justify-center" aria-label="返回"><ArrowLeft size={18} /></Link>
+        <h1 className="text-xl lg:text-2xl font-bold flex items-center gap-2">
+          <Clock size={22} strokeWidth={1.5} className="text-primary" /> 消费记录
         </h1>
       </div>
 
       <div className="flex flex-col gap-2">
         {items.map((tx) => (
-          <div key={tx.id} className="neu-card-flat p-4 flex items-center justify-between">
-            <div>
+          <div key={tx.id} className="neu-card-flat p-4 flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
               <span className={`text-xs font-semibold ${TYPE_COLORS[tx.type] || ''}`}>{TYPE_LABELS[tx.type] || tx.type}</span>
-              <p className="text-sm text-text mt-0.5">{tx.description}</p>
-              <p className="text-xs text-text-muted">{new Date(tx.created_at).toLocaleString()}</p>
+              <p className="text-sm text-text mt-0.5 truncate">{tx.description}</p>
+              <p className="text-xs text-text-muted mt-0.5">{new Date(tx.created_at).toLocaleString()}</p>
             </div>
-            <div className="text-right">
+            <div className="text-right flex-shrink-0">
               <p className={`text-lg font-bold ${tx.amount > 0 ? 'text-success' : 'text-danger'}`}>
                 {tx.amount > 0 ? '+' : ''}{tx.amount}
               </p>
@@ -46,10 +46,24 @@ export default function History() {
       </div>
 
       {total > 20 && (
-        <div className="flex justify-center gap-2 mt-4">
-          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="neu-btn text-xs">上一页</button>
-          <span className="text-sm text-text-muted flex items-center">{page} / {Math.ceil(total / 20)}</span>
-          <button onClick={() => setPage((p) => p + 1)} disabled={page * 20 >= total} className="neu-btn text-xs">下一页</button>
+        <div className="flex justify-center items-center gap-3 mt-5">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="neu-btn !w-11 !h-11 !p-0 justify-center"
+            aria-label="上一页"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <span className="text-sm text-text-muted min-w-[60px] text-center">{page} / {Math.ceil(total / 20)}</span>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page * 20 >= total}
+            className="neu-btn !w-11 !h-11 !p-0 justify-center"
+            aria-label="下一页"
+          >
+            <ArrowLeft size={18} className="rotate-180" />
+          </button>
         </div>
       )}
     </div>

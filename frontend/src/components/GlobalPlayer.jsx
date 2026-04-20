@@ -47,8 +47,13 @@ export default function GlobalPlayer() {
   if (!currentTrack) return null
 
   return (
-    <div className="fixed bottom-0 left-64 right-0 z-50 px-6 pb-4">
-      <div className="neu-card-flat p-3 flex items-center gap-4" style={{ backdropFilter: 'blur(12px)', background: 'rgba(238,241,245,0.95)' }}>
+    <div
+      className="fixed z-30 left-0 right-0 px-3 pb-3 bottom-[calc(64px+env(safe-area-inset-bottom))] lg:left-64 lg:px-6 lg:pb-4 lg:bottom-0"
+    >
+      <div
+        className="neu-card-flat p-2.5 lg:p-3 flex items-center gap-2 lg:gap-4"
+        style={{ backdropFilter: 'blur(12px)', background: 'rgba(238,241,245,0.95)' }}
+      >
         <audio
           ref={audioRef}
           src={currentTrack.url}

@@ -1,3 +1,4 @@
+import asyncio
 import json
 import uuid
 from fastapi import APIRouter, Depends, File, Form, UploadFile
@@ -65,10 +66,23 @@ class MessageResponse(BaseModel):
 # SSE helper
 # ---------------------------------------------------------------------------
 
-async def _sse_generator(event_gen):
-    """Wrap an async generator of event dicts into SSE text lines."""
+async def _sse_generator(event_gen, heartbeat_interval: float = 15.0):
+    """Wrap an async generator of event dicts into SSE text lines.
+
+    Emits an SSE comment (``: keepalive``) whenever no real event is produced
+    for ``heartbeat_interval`` seconds, so intermediate proxies and browsers
+    don't close the connection during long silent LLM calls.
+    """
+    iterator = event_gen.__aiter__()
     try:
-        async for event in event_gen:
+        while True:
+            try:
+                event = await asyncio.wait_for(iterator.__anext__(), timeout=heartbeat_interval)
+            except asyncio.TimeoutError:
+                yield ": keepalive\n\n"
+                continue
+            except StopAsyncIteration:
+                return
             event_type = event.get("event", "message")
             data = json.dumps(event.get("data", {}), ensure_ascii=False, default=str)
             yield f"event: {event_type}\ndata: {data}\n\n"
